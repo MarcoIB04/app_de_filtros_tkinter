@@ -1,9 +1,9 @@
 import cv2
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, ttk, messagebox
+from tkinter.font import Font
 from PIL import Image, ImageTk
 import numpy
-from tkinter.font import Font
 
 class ImageProcessorApp:
     image = None
@@ -68,7 +68,10 @@ class ImageProcessorApp:
         frame_buttons.rowconfigure(4,weight=1)
         frame_buttons.rowconfigure(5,weight=3)
         frame_buttons.rowconfigure(6,weight=1)
-        
+        frame_buttons.rowconfigure(7,weight=3)
+        frame_buttons.rowconfigure(8,weight=1)
+        frame_buttons.rowconfigure(9,weight=3)
+        frame_buttons.rowconfigure(10,weight=1)
 
 
         self.smooth_button = tk.Button(frame_buttons, text="Blanco y negro", fg="white", command=self.smooth_image, background="#9932CC", activebackground="#00471b", font=fuente_botones,activeforeground="white")
@@ -79,6 +82,10 @@ class ImageProcessorApp:
         self.superBinary_button.grid(column=0,columnspan=1,row=4,rowspan=1, sticky="NESW")
         self.negative_button = tk.Button(frame_buttons, text="Negativo", fg="white", command=self.negative, background="#9932CC", activebackground="#00471b", font=fuente_botones,activeforeground="white")
         self.negative_button.grid(column=0,columnspan=1,row=6,rowspan=1, sticky="NESW")
+        self.suavizarx3_button = tk.Button(frame_buttons, text="Suavizar (3x3)", fg="white", command=self.suavizarx3, background="#9932CC", activebackground="#00471b", font=fuente_botones,activeforeground="white")
+        self.suavizarx3_button.grid(column=0,columnspan=1,row=8,rowspan=1, sticky="NESW")
+        self.suavizarx9_button = tk.Button(frame_buttons, text="Suavizar (9x9)", fg="white", command=self.suavizarx9, background="#9932CC", activebackground="#00471b", font=fuente_botones,activeforeground="white")
+        self.suavizarx9_button.grid(column=0,columnspan=1,row=10,rowspan=1, sticky="NESW")
 
 
         # Frame para contener el Canvas y las barras de desplazamiento 	
@@ -193,6 +200,44 @@ class ImageProcessorApp:
 
             self.display_image()
                         
+    def suavizarx3(self):
+        filas, columnas, canales = self.image.shape
+        new_image = numpy.ndarray(shape=self.image.shape, dtype=numpy.uint8)
+        for f in range(filas):
+            for c in range(columnas):
+                f1, f2 = f-1, f+1
+                c1, c2 = c-1, c+1
+                if f1<0: f1 = 0
+                if c1<0: c1 = 0
+                if f2>filas-1: f2 = filas-1
+                if c2>columnas-1: c2 = columnas-1
+                region = self.image[f1:f2+1,c1:c2+1]
+                valor  = region.mean()
+                new_image[f,c] = [numpy.uint8(valor), numpy.uint8(valor), numpy.uint8(valor)]
+            if f%50==0 or f==filas-1:    
+                root.update()
+        self.image = new_image
+        self.display_image()
+
+    def suavizarx9(self):
+        filas, columnas, canales = self.image.shape
+        new_image = numpy.ndarray(shape=self.image.shape, dtype=numpy.uint8)
+        for f in range(filas):
+            for c in range(columnas):
+                #Tenemos que especificar el tamano de nuestra region y como sera de 9 por nueve y el pixel evaluado sera el central debemos contemplar 4 de cada lado.
+                f1, f2 = f-4, f+4
+                c1, c2 = c-4, c+4
+                if f1<0: f1 = 0
+                if c1<0: c1 = 0
+                if f2>filas-1: f2 = filas-1
+                if c2>columnas-1: c2 = columnas-1
+                region = self.image[f1:f2+1,c1:c2+1]
+                valor  = region.mean()
+                new_image[f,c] = [numpy.uint8(valor), numpy.uint8(valor), numpy.uint8(valor)]
+            if f%50==0 or f==filas-1:    
+                root.update()
+        self.image = new_image
+        self.display_image()
 
 
 
