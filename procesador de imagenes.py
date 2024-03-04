@@ -211,9 +211,26 @@ class ImageProcessorApp:
                 if c1<0: c1 = 0
                 if f2>filas-1: f2 = filas-1
                 if c2>columnas-1: c2 = columnas-1
-                region = self.image[f1:f2+1,c1:c2+1]
-                valor  = region.mean()
-                new_image[f,c] = [numpy.uint8(valor), numpy.uint8(valor), numpy.uint8(valor)]
+
+                region_roja = 0
+                for i in range(f1, f2+1):
+                    for e in range(c1, c2+1):
+                        region_roja = region_roja  + self.image[i,e,0]
+                region_roja = region_roja//9
+
+                region_verde = 0
+                for i in range(f1, f2+1):
+                    for e in range(c1, c2+1):
+                        region_verde = region_verde  + self.image[i,e,1]
+                region_verde = region_verde//9
+
+                region_azul = 0
+                for i in range(f1, f2+1):
+                    for e in range(c1, c2+1):
+                        region_azul = region_azul  + self.image[i,e,2]
+                region_azul = region_azul//9
+
+                new_image[f,c] = [numpy.uint8(region_roja), numpy.uint8(region_verde), numpy.uint8(region_azul)]
             if f%50==0 or f==filas-1:    
                 root.update()
         self.image = new_image
@@ -224,21 +241,36 @@ class ImageProcessorApp:
         new_image = numpy.ndarray(shape=self.image.shape, dtype=numpy.uint8)
         for f in range(filas):
             for c in range(columnas):
-                #Tenemos que especificar el tamano de nuestra region y como sera de 9 por nueve y el pixel evaluado sera el central debemos contemplar 4 de cada lado.
                 f1, f2 = f-4, f+4
                 c1, c2 = c-4, c+4
                 if f1<0: f1 = 0
                 if c1<0: c1 = 0
                 if f2>filas-1: f2 = filas-1
                 if c2>columnas-1: c2 = columnas-1
-                region = self.image[f1:f2+1,c1:c2+1]
-                valor  = region.mean()
-                new_image[f,c] = [numpy.uint8(valor), numpy.uint8(valor), numpy.uint8(valor)]
+
+                region_roja = 0
+                for i in range(f1, f2+1):
+                    for e in range(c1, c2+1):
+                        region_roja = region_roja  + self.image[i,e,0]
+                region_roja = region_roja//81
+
+                region_verde = 0
+                for i in range(f1, f2+1):
+                    for e in range(c1, c2+1):
+                        region_verde = region_verde  + self.image[i,e,1]
+                region_verde = region_verde//81
+
+                region_azul = 0
+                for i in range(f1, f2+1):
+                    for e in range(c1, c2+1):
+                        region_azul = region_azul  + self.image[i,e,2]
+                region_azul = region_azul//81
+
+                new_image[f,c] = [numpy.uint8(region_roja), numpy.uint8(region_verde), numpy.uint8(region_azul)]
             if f%50==0 or f==filas-1:    
                 root.update()
         self.image = new_image
         self.display_image()
-
 
 
 
